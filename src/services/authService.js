@@ -1,12 +1,14 @@
-import { supabase, adminEmails } from '../lib/supabase';
+import { supabase } from '../lib/supabase';
 
 const USERS = 'velour_users';
 const SESSION = 'velour_session';
-const roleFor = (email) => (adminEmails.includes(email.toLowerCase()) ? 'admin' : 'customer');
-
-// Swap roleFor for a lookup in a `profiles` table if you want DB-managed roles.
-const fromSupabase = (u) =>
-  u && { id: u.id, email: u.email, name: u.user_metadata?.name || u.email.split('@')[0], role: roleFor(u.email) };
+const roleFor = (email) => (email.toLowerCase() === 'admin@demo.com' ? 'admin' : 'customer');
+const fromSupabase = async (u) => {
+  if (!u) return null;
+  const { data: profile, error } = await supabase.from('profiles').select('name, role').eq('id', u.id).single();
+  if (error) throw new Error(`Unable to load your account profile: ${error.message}`);
+  return { id: u.id, email: u.email, name: profile.name, role: profile.role };
+};
 
 const readUsers = () => {
   const users = JSON.parse(localStorage.getItem(USERS) || 'null');
@@ -20,30 +22,36 @@ const publicUser = (u) => ({ id: u.id, email: u.email, name: u.name, role: roleF
 export const authService = {
   async getSession() {
     if (supabase) {
-      const { data } = await supabase.auth.getSession();
+      const { data, error } = await supabase.auth.getSession();
+      if (error) throw error;
       return fromSupabase(data.session?.user);
     }
     const email = localStorage.getItem(SESSION);
     const user = readUsers().find((u) => u.email === email);
     return user ? publicUser(user) : null;
   },
-  onChange(cb) {
+  onChange(cb, onError) {
     if (!supabase) return () => {};
-    const { data } = supabase.auth.onAuthStateChange((_e, s) => cb(fromSupabase(s?.user)));
+    const { data } = supabase.auth.onAuthStateChange((_e, s) => {
+      setTimeout(() => {
+        fromSupabase(s?.user).then(cb).catch(onError || console.error);
+      }, 0);
+    });
     return () => data.subscription.unsubscribe();
   },
   async signUp(name, email, password) {
     if (supabase) {
       const { data, error } = await supabase.auth.signUp({ email, password, options: { data: { name } } });
       if (error) throw error;
-      return fromSupabase(data.user);
+      if (!data.session) return { user: null, requiresEmailConfirmation: true };
+      return { user: await fromSupabase(data.user), requiresEmailConfirmation: false };
     }
     const users = readUsers();
     if (users.some((u) => u.email === email)) throw new Error('An account with this email already exists');
     const user = { id: `u${Date.now()}`, name, email, password };
     localStorage.setItem(USERS, JSON.stringify([...users, user]));
     localStorage.setItem(SESSION, email);
-    return publicUser(user);
+    return { user: publicUser(user), requiresEmailConfirmation: false };
   },
   async signIn(email, password) {
     if (supabase) {
@@ -57,7 +65,11 @@ export const authService = {
     return publicUser(user);
   },
   async signOut() {
-    if (supabase) return supabase.auth.signOut();
+    if (supabase) {
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
+      return;
+    }
     localStorage.removeItem(SESSION);
   },
 };
