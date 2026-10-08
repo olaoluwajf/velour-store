@@ -51,7 +51,7 @@ export default function AuthForm({ mode }) {
       <p className="muted small center">
         {isSignUp ? <>Have an account? <Link to="/login">Sign in</Link></> : <>New here? <Link to="/signup">Create an account</Link></>}
       </p>
-      {!supabase && !isSignUp && <p className="hint small center">Demo admin: admin@demo.com / admin123</p>}
+    
     </form>
   );
 }
