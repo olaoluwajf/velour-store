@@ -1,0 +1,50 @@
+// Real photos from Unsplash (free to use under the Unsplash License).
+const photo = (id) => `https://images.unsplash.com/photo-${id}?auto=format&fit=crop&w=800&h=1000&q=80`;
+
+// [name, category, price, fallback color, Unsplash photo id]
+const RAW = [
+  ['Essential Tee Black', 'T-Shirts', 24, '#111111', '1618354691373-d851c5c3a990'],
+  ['Long Sleeve Crew White', 'T-Shirts', 32, '#f4f4f5', '1620799140408-edc6dcb6d633'],
+  ['Classic White Tee', 'T-Shirts', 24, '#f4f4f5', '1622445275463-afa2ab738c34'],
+  ['Moss Green Tee', 'T-Shirts', 26, '#5f7a5a', '1633966887768-64f9a867bdba'],
+  ['Brick Street Tee Black', 'T-Shirts', 28, '#111111', '1618453292459-53424b66bb6a'],
+  ['Tri-Color Tee Pack', 'T-Shirts', 59, '#1e3a8a', '1716541424893-734612ddcabb'],
+  ['Mono Crew Tee', 'T-Shirts', 29, '#3b3b3f', '1618354691438-25bc04584c23'],
+  ['Black and White Duo Set', 'T-Shirts', 48, '#18181b', '1693443687750-611ad77f3aba'],
+  ['Black and Sage Tee Set', 'T-Shirts', 46, '#8aa88a', '1759572095384-1a7e646d0d4f'],
+  ['Studio White Tee', 'T-Shirts', 27, '#fafafa', '1622445272461-c6580cab8755'],
+  ['Night Print Hoodie', 'Hoodies', 68, '#111111', '1680292783974-a9a336c10366'],
+  ['Stone Fleece Hoodie', 'Hoodies', 66, '#9ca3af', '1564557287817-3785e38ec1f5'],
+  ['Mocha Pullover Hoodie', 'Hoodies', 70, '#7b5e4a', '1578768079052-aa76e52ff62e'],
+  ['Ghost White Hoodie', 'Hoodies', 68, '#f1f1f3', '1615397587950-3cbb55f95b77'],
+  ['Monochrome Hoodie', 'Hoodies', 72, '#2a2a2e', '1614214191247-5b2d3a734f1b'],
+  ['Core Hoodie Black', 'Hoodies', 64, '#141414', '1610582144787-eda2e6f293b4'],
+  ['Cloud Hoodie White', 'Hoodies', 69, '#fafafa', '1620799140188-3b2a02fd9a77'],
+  ['Cocoa Zip Hoodie', 'Hoodies', 74, '#6b4a3a', '1548883354-94bcfe321cbb'],
+  ['Brown Bomber', 'Jackets', 98, '#6b4a3a', '1591047139829-d91aecb6caea'],
+  ['Denim Button Jacket', 'Jackets', 84, '#4a6fa5', '1611312449408-fcece27cdbb7'],
+  ['White Puffer Jacket', 'Jackets', 120, '#f5f5f5', '1706765779494-2705542ebe74'],
+  ['Black Leather Jacket', 'Jackets', 129, '#0f0f10', '1727515546577-f7d82a47b51d'],
+  ['Black Zip Jacket', 'Jackets', 79, '#111111', '1605908502724-9093a79a1b39'],
+  ['Camel Coat', 'Jackets', 109, '#a98467', '1627637454030-5ddd536e06e5'],
+  ['Washed Blue Jacket', 'Jackets', 82, '#5b7fb0', '1543076447-215ad9ba6923'],
+  ['Sky Blue Shirt', 'Shirts', 54, '#7aa7d9', '1740711152088-88a009e877bb'],
+  ['White Button-Up', 'Shirts', 55, '#ffffff', '1603252109303-2751441dd157'],
+  ['Heart Print Button-Down', 'Shirts', 58, '#4a6fa5', '1596755094514-f87e34085b2c'],
+  ['Slate Grey Shirt', 'Shirts', 49, '#9ca3af', '1564584217132-2271feaeb3c5'],
+  ['Heritage Shirt Set', 'Shirts', 79, '#1e3a8a', '1489987707025-afc232f7ea0f'],
+];
+
+export const seedProducts = RAW.map(([name, category, price, color, photoId], i) => ({
+  id: i + 1,
+  name,
+  category,
+  price,
+  color,
+  description: `${name}. Soft, durable fabric with a clean modern cut. Designed to be worn on repeat and styled with anything.`,
+  stock: 5 + ((i * 13) % 40),
+  featured: i % 5 === 0,
+  rating: Number((4 + ((i * 7) % 10) / 10).toFixed(1)),
+  badge: i % 7 === 0 ? 'New' : i % 11 === 0 ? 'Sale' : '',
+  image: photo(photoId),
+}));
