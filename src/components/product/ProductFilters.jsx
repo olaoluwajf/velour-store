@@ -16,9 +16,11 @@ export default function ProductFilters({ search, setSearch, category, setCategor
       </div>
       <div>
         <h4>Sort by</h4>
-        <select className="input" value={sort} onChange={(e) => setSort(e.target.value)}>
-          {SORTS.map((s) => <option key={s.value} value={s.value}>{s.label}</option>)}
-        </select>
+        <div className="sort-select">
+          <select className="input sort-select-input" value={sort} onChange={(e) => setSort(e.target.value)}>
+            {SORTS.map((s) => <option key={s.value} value={s.value}>{s.label}</option>)}
+          </select>
+        </div>
       </div>
     </aside>
   );
