@@ -5,3 +5,4 @@ const key = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || import.meta.env.VIT
 
 // null means demo mode (localStorage)
 export const supabase = url && key ? createClient(url, key) : null;
+export const supabaseRequired = import.meta.env.PROD && !supabase;

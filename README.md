@@ -16,8 +16,9 @@ React + Vite minimalist clothing store.
 ## Supabase
 1. In your Supabase project, open **SQL Editor**, run `supabase/schema.sql`. This creates the products and profiles tables, their row-level security policies, and seeds the catalog if the products table is empty. It also creates profiles for existing Supabase Auth users.
 2. Copy `.env.example` to `.env` and set `VITE_SUPABASE_URL` and either `VITE_SUPABASE_PUBLISHABLE_KEY` or `VITE_SUPABASE_ANON_KEY` from **Project Settings → API**. The app accepts either key name. These public client keys are intended for browser use; never put a service-role key in the frontend.
-3. Restart `npm run dev` after changing `.env`. New sign-ups are stored in Supabase Auth, with a `profiles` row automatically created for each user. If email confirmation is enabled in Supabase Auth, confirm the email before signing in. Products are read from and managed in the Supabase `products` table.
-4. To grant admin access, sign up through the app, then run this in the SQL Editor, replacing the email:
+3. For Vercel, add `VITE_SUPABASE_URL` and `VITE_SUPABASE_PUBLISHABLE_KEY` under **Project → Settings → Environment Variables**, enable them for the deployment environment, and redeploy. Local `.env` settings are not uploaded to Vercel.
+4. Restart `npm run dev` after changing `.env`. New sign-ups are stored in Supabase Auth, with a `profiles` row automatically created for each user. If email confirmation is enabled in Supabase Auth, confirm the email before signing in. Products are read from and managed in the Supabase `products` table.
+5. To grant admin access, sign up through the app, then run this in the SQL Editor, replacing the email:
 
    ```sql
    update public.profiles

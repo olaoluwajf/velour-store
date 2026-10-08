@@ -1,8 +1,11 @@
-import { supabase } from '../lib/supabase';
+import { supabase, supabaseRequired } from '../lib/supabase';
 
 const USERS = 'velour_users';
 const SESSION = 'velour_session';
 const roleFor = (email) => (email.toLowerCase() === 'admin@demo.com' ? 'admin' : 'customer');
+const requireSupabase = () => {
+  if (supabaseRequired) throw new Error('Account storage is unavailable. Configure the Supabase URL and publishable key in Vercel, then redeploy.');
+};
 const fromSupabase = async (u) => {
   if (!u) return null;
   const { data: profile, error } = await supabase.from('profiles').select('name, role').eq('id', u.id).single();
@@ -26,6 +29,7 @@ export const authService = {
       if (error) throw error;
       return fromSupabase(data.session?.user);
     }
+    if (supabaseRequired) return null;
     const email = localStorage.getItem(SESSION);
     const user = readUsers().find((u) => u.email === email);
     return user ? publicUser(user) : null;
@@ -40,6 +44,7 @@ export const authService = {
     return () => data.subscription.unsubscribe();
   },
   async signUp(name, email, password) {
+    requireSupabase();
     if (supabase) {
       const { data, error } = await supabase.auth.signUp({ email, password, options: { data: { name } } });
       if (error) throw error;
@@ -54,6 +59,7 @@ export const authService = {
     return { user: publicUser(user), requiresEmailConfirmation: false };
   },
   async signIn(email, password) {
+    requireSupabase();
     if (supabase) {
       const { data, error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) throw error;
